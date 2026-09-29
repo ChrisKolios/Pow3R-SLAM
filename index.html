@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Pow3R-SLAM: a real-time RGB-D SLAM system that uses sensor depth as a prior on a two-view 3D reconstruction network, rather than as geometry to fuse.">
+  <meta name="author" content="Christopher Kolios, Ishaan Mehta, Sasa Janjic, Yeganeh Bahoo, Sajad Saeedi">
+  <link rel="canonical" href="https://chriskolios.github.io/Pow3R-SLAM/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Pow3R-SLAM: Real-Time RGB-D SLAM with 3D Reconstruction Priors">
+  <meta property="og:description" content="Pow3R-SLAM: a real-time RGB-D SLAM system that uses sensor depth as a prior on a two-view 3D reconstruction network, rather than as geometry to fuse.">
+  <meta property="og:url" content="https://chriskolios.github.io/Pow3R-SLAM/">
+  <meta property="og:image" content="https://chriskolios.github.io/Pow3R-SLAM/primary-poster.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>Pow3R-SLAM | Project Page</title>
+
+  <style>
+    /* ---------- Design tokens ---------- */
+    :root {
+      color-scheme: light;
+      --primary: #475569;
+      --primary-hover: #334155;
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-body: #334155;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --fig-depth: #1f6fb5;   /* "Blue" in Fig. 2 (figdepth) */
+      --fig-opt: #b25e0e;     /* "Orange" in Fig. 2 (figopt) */
+      --radius: 12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    * { margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--primary); text-decoration: none; font-weight: 500; }
+    a:hover { color: var(--primary-hover); text-decoration: underline; }
+
+    :focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+    img { display: block; max-width: 100%; height: auto; }
+
+    /* ---------- Main layout ---------- */
+    .main-content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      scroll-margin-top: 2rem;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      line-height: 1.3;
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--bg);
+    }
+
+    p { color: var(--text-body); }
+    p + p { margin-top: 1.2rem; }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      text-align: center;
+      padding: 2rem 0 3rem;
+      scroll-margin-top: 2rem;
+    }
+
+    .hero .tagline {
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+
+    .nowrap { white-space: nowrap; }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      line-height: 1.2;
+      text-wrap: balance;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero .authors {
+      font-size: 1.2rem;
+      color: var(--text);
+      margin-bottom: 0.6rem;
+      text-wrap: balance;
+    }
+    .hero .authors .author { white-space: nowrap; }
+    .hero .authors sup, .hero .affiliations sup { font-size: 0.7em; color: var(--text-muted); }
+    .hero .affiliations {
+      font-size: 0.98rem;
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+      text-wrap: balance;
+    }
+    .hero .affiliations span { white-space: nowrap; display: inline-block; margin: 0 0.6rem; }
+    .pill small { font-weight: 500; color: var(--text-muted); }
+
+    /* ---------- Citation ---------- */
+    .bibtex {
+      margin-top: 0.8rem;
+      padding: 1rem 1.2rem;
+      overflow-x: auto;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font: 0.85rem/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      color: var(--text-body);
+      white-space: pre;
+    }
+    h3 { font-size: 1.1rem; margin: 1.6rem 0 0.4rem; color: var(--text); }
+
+    .pill-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .pill:hover { border-color: var(--primary); color: var(--primary); text-decoration: none; }
+
+    /* ---------- Abstract ---------- */
+    .abstract p { text-align: justify; hyphens: auto; }
+
+    /* ---------- Pipeline figure ---------- */
+    .figure-scroll {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .figure-scroll img { width: 100%; min-width: 720px; }
+
+    figure figcaption {
+      margin-top: 1rem;
+      font-size: 0.92rem;
+      color: var(--text-body);
+    }
+    figcaption .label { font-weight: 700; color: var(--text); }
+    .c-depth { color: var(--fig-depth); font-weight: 700; }
+    .c-opt { color: var(--fig-opt); font-weight: 700; }
+    .figure-links { margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted); }
+
+    /* ---------- Videos ---------- */
+    .intro { margin-bottom: 1.5rem; }
+
+    .video-stage {
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .video-stage video { display: block; width: 100%; height: 100%; object-fit: contain; }
+
+    .note {
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      font-style: italic;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 800px) {
+      .main-content { padding: 1.5rem 1rem; }
+      .hero h1 { font-size: 2rem; }
+      .card { padding: 1.5rem; }
+      .abstract p { text-align: left; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+  <!-- An empty icon, so the host is not asked for a favicon.ico that does not exist. -->
+  <link rel="icon" href="data:,">
+
+  <link rel="stylesheet" href="supplementary/css/supplementary.css">
+
+  <!-- Classic scripts with relative paths, so the page also works from a
+       sandboxed or file-based host. `defer` preserves this order. -->
+  <script defer src="supplementary/vendor/three/three.min.js"></script>
+  <script defer src="supplementary/vendor/three/OrbitControls.js"></script>
+  <!-- Three.js "fat lines": screen-space-width, dashable lines. Classic
+       builds from the r147 examples; each defines a THREE.* global, so the
+       order below matters (a class extends the one above it). -->
+  <script defer src="supplementary/vendor/three/lines/LineSegmentsGeometry.js"></script>
+  <script defer src="supplementary/vendor/three/lines/LineGeometry.js"></script>
+  <script defer src="supplementary/vendor/three/lines/LineMaterial.js"></script>
+  <script defer src="supplementary/vendor/three/lines/LineSegments2.js"></script>
+  <script defer src="supplementary/vendor/three/lines/Line2.js"></script>
+  <script defer src="supplementary/js/ps-loader.js"></script>
+  <script defer src="supplementary/maps/manifest.data.js"></script>
+  <script defer src="supplementary/depth/manifest.data.js"></script>
+  <script defer src="supplementary/videos/videos.data.js"></script>
+  <script defer src="supplementary/js/map-viewer.js"></script>
+  <script defer src="supplementary/js/depth-compare.js"></script>
+  <script defer src="supplementary/js/video-gallery.js"></script>
+</head>
+<body>
+
+  <main class="main-content">
+
+    <header class="hero">
+      <p class="tagline">Project Page</p>
+      <h1>Pow3R-SLAM: Real-Time <span class="nowrap">RGB-D</span> SLAM with 3D Reconstruction Priors</h1>
+      <p class="authors">
+        <span class="author">Christopher Kolios<sup>1</sup>,</span>
+        <span class="author">Ishaan Mehta<sup>1</sup>,</span>
+        <span class="author">Sasa Janjic<sup>2</sup>,</span>
+        <span class="author">Yeganeh Bahoo<sup>1</sup>,</span>
+        <span class="author">Sajad Saeedi<sup>3</sup></span>
+      </p>
+      <p class="affiliations">
+        <span><sup>1</sup>Toronto Metropolitan University</span>
+        <span><sup>2</sup>University of Windsor</span>
+        <span><sup>3</sup>University College London</span>
+      </p>
+
+      <div class="pill-container">
+        <!-- ARXIV: once the preprint has an identifier, point this link at
+             https://arxiv.org/abs/<id> and change the small text to "arXiv". -->
+        <a class="pill" href="#availability">Paper <small>arXiv, coming soon</small></a>
+        <a class="pill" href="https://github.com/ChrisKolios/Pow3R-SLAM">Code <small>coming soon</small></a>
+        <a class="pill" href="#primary-video">Video</a>
+        <a class="pill" href="#map-explorer">Explore Maps</a>
+      </div>
+    </header>
+
+    <details class="page-nav" id="page-nav">
+      <summary>On this page</summary>
+      <ul>
+        <li><a href="#abstract">Abstract</a></li>
+        <li><a href="#method">Method</a></li>
+        <li><a href="#primary-video">Primary Video</a></li>
+        <li><a href="#map-explorer">Map Explorer</a></li>
+        <li><a href="#depth-explorer">Depth Explorer</a></li>
+        <li><a href="#supplementary-videos">Videos</a></li>
+        <li><a href="#availability">Paper &amp; Code</a></li>
+      </ul>
+    </details>
+
+    <section class="card abstract" id="abstract" aria-labelledby="abstract-title">
+      <h2 id="abstract-title">Abstract</h2>
+      <p>
+        We present Pow3R-SLAM, a real-time RGB-D simultaneous localization and mapping (SLAM) system
+        that uses Pow3R for tracking and mapping. Inspired by MASt3R-SLAM, a recent work on monocular
+        SLAM using two-view 3D reconstruction priors, we extend the work to incorporate depth as a prior
+        on the network’s prediction, rather than as geometry to fuse. Where traditional RGB-D SLAM
+        systems struggle with sparsity in the depth images, Pow3R utilizes the available depth to give
+        a better-conditioned pointmap, while inferring the depths in empty regions from the two-view
+        photometric, depth, and intrinsic data. Evaluated against MASt3R-SLAM following its protocol on
+        24 sequences from TUM, 7-Scenes, and Replica, Pow3R-SLAM runs 1.6× faster in wall time, has 15%
+        lower mean trajectory error, a 3.1× lower unscaled error, and produces denser maps, with a 30%
+        lower Chamfer distance. We also introduce a hybrid variant that runs 2.1× faster than
+        MASt3R-SLAM at 25.3 frames per second (FPS), while maintaining improved tracking and mapping
+        accuracy. Against ORB-SLAM3 in RGB-D mode, Pow3R-SLAM is more accurate on TUM, 7-Scenes, and
+        ETH3D-SLAM, and completes every TUM sequence. While Pow3R-SLAM can struggle on a small set of
+        self-similar scenes, its overall performance shows that adding depth as a prior for two-view 3D
+        reconstruction SLAM can be beneficial. Code will be made open-source upon acceptance.
+      </p>
+    </section>
+
+    <section class="card" id="method" aria-labelledby="method-title">
+      <h2 id="method-title">Method Overview</h2>
+      <figure>
+        <div class="figure-scroll">
+          <img src="Fig2_pipeline_website.png"
+               srcset="Fig2_pipeline_website_1200.png 1200w, Fig2_pipeline_website.png 2400w"
+               sizes="(max-width: 800px) 720px, 880px"
+               width="2400" height="627"
+               alt="Pow3R-SLAM pipeline diagram. Inputs (intrinsics, keyframe and frame images, sensor depth) feed a front end of depth-conditioned Pow3R, metric scaling and tracking, and a backend of loop closure and depth-anchored global optimization, producing a metric trajectory and a dense metric map. An optional hybrid branch tracks alternate frames by ICP.">
+        </div>
+        <figcaption>
+          <span class="label">Fig. 2. Pow3R-SLAM pipeline.</span>
+          Pow3R-SLAM is an RGB-D SLAM system that uses sensor depth as a prior on a two-view pointmap
+          network. The front end (1-3) runs on every frame. (1) Pow3R predicts pointmaps and confidences
+          for the frame and its keyframe, conditioned on sensor depth and intrinsics (Sec. III-B).
+          (2) Each prediction is made metric against the sensor depth (Eq. 1). (3) The frame is tracked
+          in <b>Sim</b>(3) and may become a keyframe (Secs. III-C–III-D). The backend (4, 5) runs on
+          every new keyframe. (4) Loop closure on Pow3R’s encoder tokens adds edges in familiar
+          locations, and relocalization locates frames the tracker has lost. (5) A global optimization
+          refines every keyframe pose, with keyframe depths anchored to the sensor and
+          confidence-calibrated edges (Sec. III-E.3, Eqs. 5–7).
+          <span class="c-depth">Blue</span>: the sensor-depth path.
+          <span class="c-opt">Orange</span>: optional components, including the hybrid variant, which
+          tracks alternate frames by ICP instead of Pow3R (Sec. III-G), and map-only keyframes
+          (Sec. III-F). ICP frames never become keyframes, so every keyframe comes from a Pow3R pass.
+          Inputs and outputs: <i>TUM fr1/desk</i>.
+        </figcaption>
+        <p class="figure-links"><a href="Fig2_pipeline_website.pdf">Open the vector figure (PDF)</a></p>
+      </figure>
+    </section>
+
+    <section class="card" id="primary-video" aria-labelledby="primary-video-title">
+      <h2 id="primary-video-title">Primary Demonstration</h2>
+      <p class="intro">An overview of the proposed method and main results.</p>
+
+      <div class="video-stage">
+        <video controls playsinline preload="metadata" src="primary-video.mp4" poster="primary-poster.jpg">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      <p class="note">Full system demonstration highlighting core capabilities.</p>
+      <p class="note"><a href="primary-video.mp4" download>Download the video (MP4, 18.7 MB)</a></p>
+    </section>
+
+    <section class="card" id="map-explorer" aria-labelledby="map-explorer-title">
+      <h2 id="map-explorer-title">Interactive Map Explorer</h2>
+      <p class="intro">
+        Both systems are given the same input frames: MASt3R-SLAM sees the RGB images only, and
+        Pow3R-SLAM sees the same images and the sensor depth. Each map here is gated only by that
+        system&rsquo;s own confidence, at the percentile printed on its side of the view, with
+        nothing trimmed against the ground truth. Drag the divider to wipe between the two maps.
+        Both halves share one camera, so any pair of points either side of the line is the same
+        viewpoint. Note that some sequences (e.g. fr1/room) include ablation results.
+      </p>
+      <div id="ps-map"></div>
+      <noscript><p class="note">The interactive 3D map explorer needs JavaScript; the maps it
+        draws are the data files under <code>supplementary/maps/</code>.</p></noscript>
+    </section>
+
+    <section class="card" id="depth-explorer" aria-labelledby="depth-explorer-title">
+      <h2 id="depth-explorer-title">Sensor vs. Network Depth: Holes, Sparsity and Noise</h2>
+      <p class="intro">
+        Depth enters Pow3R-SLAM as a prior on the network&rsquo;s prediction, instead of as geometry to
+        fuse. Thinning the depth to a small fraction
+        of its pixels barely moves the mean trajectory error, because the network fills the gaps
+        from the two views. However, dense but wrong depth drags the prediction with it, and at
+        &sigma; = 0.2 and above ends up worse than supplying no depth at all. Wipe the divider to compare the depth that
+        went in with the depth that came out. With no depth at all the network still returns a
+        complete pointmap, but its metric scale is unconstrained, so the predicted depths land
+        outside the sensor&rsquo;s own range and saturate the shared colour scale. Pointmap output is from 2 views.
+      </p>
+      <div id="ps-depth"></div>
+      <noscript><p class="note">The depth comparison needs JavaScript; the images it uses are the
+        PNG files under <code>supplementary/depth/</code>.</p></noscript>
+    </section>
+
+    <section class="card" id="supplementary-videos" aria-labelledby="supplementary-videos-title">
+      <h2 id="supplementary-videos-title">Supplementary Videos</h2>
+      <p class="intro">
+        Extended sequences and side-by-side runs.
+      </p>
+      <div id="ps-videos"></div>
+      <noscript><p class="note">The video gallery needs JavaScript; the clips are the MP4 files
+        under <code>supplementary/videos/</code>.</p></noscript>
+    </section>
+
+
+
+    <section class="card" id="availability" aria-labelledby="availability-title">
+      <h2 id="availability-title">Paper &amp; Code</h2>
+      <h3>Paper</h3>
+      <!-- ARXIV: replace this paragraph's text with a link to https://arxiv.org/abs/<id>. -->
+      <p>The preprint is being posted to arXiv; the link will appear here.</p>
+
+      <h3>Code</h3>
+      <p>
+        The code will be released in the
+        <a href="https://github.com/ChrisKolios/Pow3R-SLAM">Pow3R-SLAM repository</a> after the review process.
+      </p>
+
+      <h3>Citation</h3>
+      <!-- ARXIV: once the identifier is known, add
+           eprint = {<id>}, archivePrefix = {arXiv} and replace the note. -->
+      <pre class="bibtex">@misc{kolios2026pow3rslam,
+  title  = {{Pow3R-SLAM}: Real-Time {RGB-D} {SLAM} with {3D} Reconstruction Priors},
+  author = {Kolios, Christopher and Mehta, Ishaan and Janjic, Sasa and
+            Bahoo, Yeganeh and Saeedi, Sajad},
+  year   = {2026},
+  note   = {Preprint}
+}</pre>
+
+      <h3>Acknowledgment</h3>
+      <p>
+        We acknowledge the support of the Natural Sciences and Engineering Research Council of
+        Canada (NSERC).
+      </p>
+    </section>
+
+  </main>
+
+  <script>
+    // The "On this page" list is a <details>: collapsed on a phone, open on a
+    // wide screen. Classic script, no storage (the host's sandbox forbids it).
+    (function () {
+      var nav = document.getElementById('page-nav');
+      if (!nav) { return; }
+      try {
+        if (window.matchMedia('(min-width: 801px)').matches) { nav.open = true; }
+      } catch (e) { nav.open = true; }
+      nav.addEventListener('click', function (e) {
+        var a = e.target.closest ? e.target.closest('a') : null;
+        if (a && nav.open && window.innerWidth <= 800) { nav.open = false; }
+      });
+    })();
+  </script>
+
+</body>
+</html>
