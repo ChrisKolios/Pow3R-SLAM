@@ -44,10 +44,10 @@ The code will be released in this repository after the review process.
 
 ```bibtex
 @misc{kolios2026pow3rslam,
-  title  = {{Pow3R-SLAM}: Real-Time {RGB-D} {SLAM} with {3D} Reconstruction Priors},
-  author = {Kolios, Christopher and Mehta, Ishaan and Janjic, Sasa and
-            Bahoo, Yeganeh and Saeedi, Sajad},
-  year   = {2026},
+  title         = {{Pow3R-SLAM}: Real-Time {RGB-D} {SLAM} with {3D} Reconstruction Priors},
+  author        = {Kolios, Christopher and Mehta, Ishaan and Janjic, Sasa and
+                   Bahoo, Yeganeh and Saeedi, Sajad},
+  year          = {2026},
   eprint        = {2609.38054},
   archivePrefix = {arXiv},
   primaryClass  = {cs.RO}
