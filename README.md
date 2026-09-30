@@ -4,10 +4,7 @@
 
 <sup>1</sup>Toronto Metropolitan University · <sup>2</sup>University of Windsor · <sup>3</sup>University College London
 
-**[Project page](https://chriskolios.github.io/Pow3R-SLAM/)** · **Paper** (arXiv, coming soon) · **[Video](https://chriskolios.github.io/Pow3R-SLAM/#primary-video)**
-
-<!-- ARXIV: once the preprint has an identifier, make "Paper" a link to https://arxiv.org/abs/<id>
-     and add the eprint fields to the citation below. -->
+**[Project page](https://chriskolios.github.io/Pow3R-SLAM/)** · **[Paper](https://arxiv.org/abs/2609.38054)** · **[Video](https://chriskolios.github.io/Pow3R-SLAM/#primary-video)**
 
 ![Pow3R-SLAM pipeline](https://chriskolios.github.io/Pow3R-SLAM/Fig2_pipeline_website_1200.png)
 
@@ -15,7 +12,7 @@ Pow3R-SLAM is a real-time RGB-D SLAM system that uses [Pow3R](https://github.com
 for tracking and mapping. It builds on [MASt3R-SLAM](https://github.com/rmurai0610/MASt3R-SLAM),
 a monocular system built on two-view 3D reconstruction priors, and extends it to RGB-D by using
 the sensor depth as a **prior on the network's prediction, rather than as geometry to fuse**.
-Where the depth image has holes, the network infers the missing depth from the two views; where
+Where the depth image has holes, the network infers the missing depth from the two views. Where
 it has readings, they condition the pointmap and make it metric.
 
 ## Results at a glance
@@ -32,7 +29,7 @@ and Replica:
 | Hybrid variant | 2.1× faster, 25.3 FPS, with improved tracking and mapping accuracy |
 
 Against ORB-SLAM3 in RGB-D mode, Pow3R-SLAM is more accurate on TUM, 7-Scenes and ETH3D-SLAM, and
-completes every TUM sequence. It can struggle on a small set of self-similar scenes; the paper
+completes every TUM sequence. It can struggle on a small set of self-similar scenes, and both the paper
 and the project page show that case as well.
 
 The [project page](https://chriskolios.github.io/Pow3R-SLAM/) has an interactive 3D comparison
@@ -51,7 +48,9 @@ The code will be released in this repository after the review process.
   author = {Kolios, Christopher and Mehta, Ishaan and Janjic, Sasa and
             Bahoo, Yeganeh and Saeedi, Sajad},
   year   = {2026},
-  note   = {Preprint}
+  eprint        = {2609.38054},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.RO}
 }
 ```
 
